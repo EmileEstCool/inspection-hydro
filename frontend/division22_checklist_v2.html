@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Division 22 – Plan de contrôle | QUKID Aupaluk-2</title>
+<style>
+:root {
+  --orange:#D35400; --orange-lt:#FEF0E7;
+  --navy:#1A2B4A; --blue:#2E4B7A; --blue-lt:#EBF0F8;
+  --green:#1A7A4A; --green-lt:#E6F5ED;
+  --grey:#5A6070; --grey-lt:#F2F4F7;
+  --border:#D0D7E5; --text:#1C2333;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#ECF0F6;color:var(--text);font-size:13px}
+
+/* HEADER */
+.hdr{background:var(--navy);color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:3px solid var(--orange);position:sticky;top:0;z-index:100}
+.hdr-t{font-size:14px;font-weight:700}.hdr-s{font-size:11px;color:#A8BCD8;margin-top:2px}
+.hdr-meta{font-size:11px;color:#8AA4C0;text-align:right;line-height:1.6}
+.reset-btn{padding:5px 14px;background:transparent;border:1px solid #4A6090;color:#A8BCD8;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap}
+.reset-btn:hover{background:#1A3560}
+
+/* PROGRESS */
+.prog-bar{background:var(--blue);padding:9px 22px;display:flex;align-items:center;gap:14px;position:sticky;top:77px;z-index:99;border-bottom:1px solid #3A6090}
+.prog-lbl{font-size:11px;color:#A8BCD8;white-space:nowrap}
+.prog-track{flex:1;background:#1A3560;border-radius:4px;height:7px;overflow:hidden}
+.prog-fill{background:linear-gradient(90deg,var(--orange),#E86D20);height:100%;border-radius:4px;transition:width .35s ease}
+.prog-ct{font-size:12px;color:#fff;font-weight:600;white-space:nowrap;min-width:80px;text-align:right}
+
+/* MAIN */
+.main{padding:18px 22px 50px;max-width:1360px;margin:0 auto}
+
+/* FILTERS */
+.filters{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.flbl{font-size:11px;color:var(--grey)}
+.fbtn{padding:4px 13px;border-radius:20px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:11px;color:var(--grey);transition:all .15s}
+.fbtn:hover,.fbtn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* SECTION WRAPPERS */
+.blk{margin-bottom:10px;border-radius:4px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+/* HEADER LEVELS */
+.sh0{background:var(--orange);color:#fff;padding:9px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+.sh1{background:var(--navy);color:#fff;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.sh1:hover{background:#223660}
+.sh2{background:var(--blue);color:#fff;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.sh2:hover{background:#3A5C8A}
+.sh3{background:var(--blue-lt);color:var(--navy);padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);user-select:none}
+.sh3:hover{background:#D8E4F2}
+.sh-right{display:flex;align-items:center;gap:10px;font-size:11px;opacity:.8;white-space:nowrap}
+.chevron{display:inline-block;transition:transform .2s;font-size:10px;opacity:.7}
+.coll .chevron{transform:rotate(-90deg)}
+
+/* TABLE */
+.twrap{overflow-x:auto;border-top:none}
+table{width:100%;border-collapse:collapse;font-size:12px;background:#fff}
+thead th{background:var(--grey-lt);color:var(--grey);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:7px 9px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr{border-bottom:1px solid #EDF0F6;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#F8FAFE}
+tbody tr.done{background:var(--green-lt)}
+tbody tr.done:hover{background:#D0EAD8}
+tbody tr.hide{display:none}
+td{padding:8px 9px;vertical-align:top}
+.c-chk{width:36px;text-align:center}
+.c-no{width:72px;font-family:Consolas,monospace;font-size:11px;color:var(--grey)}
+.c-tit{width:175px;font-weight:600;color:var(--navy)}
+.c-typ{width:160px;color:var(--grey);font-size:11px}
+.c-cod{width:90px;text-align:center}
+.c-ref{width:155px;font-size:11px;color:var(--blue);font-family:Consolas,monospace;line-height:1.6}
+.c-ins{min-width:220px;line-height:1.55}
+.c-frq{width:170px;color:var(--grey);font-size:11px;line-height:1.55}
+.c-out{width:145px}
+
+input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:var(--green)}
+
+/* BADGES */
+.cb{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;font-family:Consolas,monospace;border:1px solid}
+.cb-RD{background:#FEF3E2;color:#A05C00;border-color:#F0C980}
+.cb-PS{background:#E8F4FF;color:#1A5C99;border-color:#A8C8EC}
+.cb-IP{background:#F0ECFF;color:#5030A0;border-color:#C0B0E0}
+.ob{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:var(--orange-lt);color:var(--orange);border:1px solid #F0C0A0;margin-bottom:2px}
+
+ul.il{margin:3px 0 0 13px}ul.il li{margin-bottom:1px}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div>
+    <div class="hdr-t">6. SERVICES MÉCANIQUE DU BÂTIMENT — Division 22 Plomberie</div>
+    <div class="hdr-s">QUKID – Centrale Diésel d'Aupaluk-2 | Lot #2 | Doc : 5432-40099-002-01-C-LG-L | Rév. C – Juillet 2024</div>
+  </div>
+  <div class="hdr-meta">Plan de contrôle des travaux<br>Cochez chaque étape complétée ✓</div>
+  <button class="reset-btn" onclick="resetAll()">↺ Tout réinitialiser</button>
+</header>
+
+<div class="prog-bar">
+  <span class="prog-lbl">Progression globale</span>
+  <div class="prog-track"><div class="prog-fill" id="gFill" style="width:0%"></div></div>
+  <span class="prog-ct" id="gCt">0 / 0</span>
+</div>
+
+<div class="main">
+  <div class="filters">
+    <span class="flbl">Afficher :</span>
+    <button class="fbtn on" onclick="setF('all',this)">Toutes les étapes</button>
+    <button class="fbtn" onclick="setF('todo',this)">À faire</button>
+    <button class="fbtn" onclick="setF('done',this)">Complétées</button>
+    <button class="fbtn" onclick="setF('RD',this)">RD – Remise de documents</button>
+    <button class="fbtn" onclick="setF('PS',this)">PS – Suivi en cours</button>
+    <button class="fbtn" onclick="setF('IPS',this)">I, PS, PA</button>
+  </div>
+
+  <div class="blk">
+    <div class="sh0">6. SERVICES MÉCANIQUE DU BÂTIMENT (5432-40099-002-01-C-LG-L)</div>
+
+    <!-- 6.1 -->
+    <div class="sh1" onclick="tog('s61',this)">
+      <span>6.1 &nbsp; Division 22 — PLOMBERIE</span>
+      <span class="sh-right"><span id="p-s61">0/0</span><span class="chevron">▾</span></span>
+    </div>
+    <div id="s61">
+
+      <!-- 6.1.1 Générale -->
+      <div class="sh2" onclick="tog('s611',this)">
+        <span>6.1.1 &nbsp; Division 22 – Générale</span>
+        <span class="sh-right"><span id="p-s611">0/3</span><span class="chevron">▾</span></span>
+      </div>
+      <div id="s611"><div class="twrap"><table>
+        <thead><tr>
+          <th class="c-chk">✓</th><th class="c-no">No.</th><th class="c-tit">Titre de l'étape</th>
+          <th class="c-typ">Étapes de travaux TYP.</th><th class="c-cod">Code opér.</th>
+          <th class="c-ref">Références (devis, articles, codes)</th>
+          <th class="c-ins">Instructions particulières</th>
+          <th class="c-frq">Fréquence</th><th class="c-out">Outils de contrôle</th>
+        </tr></thead>
+        <tbody>
+          <tr data-code="RD">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6111')"></td>
+            <td class="c-no">6.1.1.1</td>
+            <td class="c-tit">Calendrier des essais</td>
+            <td class="c-typ">Avant les essais et démonstrations</td>
+            <td class="c-cod"><span class="cb cb-RD">RD</span></td>
+            <td class="c-ref">22 05 93<br>article 1.5</td>
+            <td class="c-ins">Indiquer les dates prévues ainsi que les représentants des autorités compétentes requis pour assister à l'essai.</td>
+            <td class="c-frq">À tous les mois pour les adapter au déroulement du projet</td>
+            <td class="c-out"><span class="ob">Calendrier des essais et des démonstrations</span><br><span class="ob">Calendrier des séances de formation</span></td>
+          </tr>
+          <tr data-code="RD">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6112')"></td>
+            <td class="c-no">6.1.1.2</td>
+            <td class="c-tit">Procédures techniques</td>
+            <td class="c-typ">Avant les travaux – essais et équilibrage</td>
+            <td class="c-cod"><span class="cb cb-RD">RD</span></td>
+            <td class="c-ref">22 05 93<br>art. 1.14<br>22 07 19<br>art. 1.8</td>
+            <td class="c-ins">Comprend :<ul class="il"><li>Réalisation des essais d'équilibrage des réseaux</li><li>Épreuves</li><li>Équilibrages</li><li>Pose d'isolation</li><li>Nettoyage et désinfection des réseaux</li></ul></td>
+            <td class="c-frq">Avant le début des travaux</td>
+            <td class="c-out"><span class="ob">Procédures pour chaque essai</span></td>
+          </tr>
+          <tr data-code="RD">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6113')"></td>
+            <td class="c-no">6.1.1.3</td>
+            <td class="c-tit">Documents et échantillons</td>
+            <td class="c-typ">Avant les travaux</td>
+            <td class="c-cod"><span class="cb cb-RD">RD</span></td>
+            <td class="c-ref">22 05 01<br>art. 1.5<br>22 15 01<br>art. 1.3<br>22 05 53<br>art. 1.3</td>
+            <td class="c-ins">Comprend :<ul class="il"><li>Certifications de main-d'œuvre (art. 1.6)</li><li>Plans d'installation</li><li>Données techniques (art. 1.8)</li><li>Attestations de conformité</li><li>Listes des équipements</li><li>Dessins d'atelier et fiches techniques (art. 1.7)</li><li>Certifications et qualification sismique du fabricant</li><li>Attestation de qualité pour revue et acceptation</li></ul></td>
+            <td class="c-frq">Avant le début des travaux</td>
+            <td class="c-out"><span class="ob">Documentation technique</span></td>
+          </tr>
+        </tbody>
+      </table></div></div>
+
+      <!-- 6.1.2 Eau domestique -->
+      <div class="sh3" onclick="tog('s612',this)">
+        <span>6.1.2 &nbsp; Division 22 – Tuyauterie d'eau domestique</span>
+        <span class="sh-right"><span id="p-s612">0/6</span><span class="chevron">▾</span></span>
+      </div>
+      <div id="s612"><div class="twrap"><table>
+        <thead><tr>
+          <th class="c-chk">✓</th><th class="c-no">No.</th><th class="c-tit">Titre de l'étape</th>
+          <th class="c-typ">Étapes de travaux TYP.</th><th class="c-cod">Code opér.</th>
+          <th class="c-ref">Références (devis, articles, codes)</th>
+          <th class="c-ins">Instructions particulières</th>
+          <th class="c-frq">Fréquence</th><th class="c-out">Outils de contrôle</th>
+        </tr></thead>
+        <tbody>
+          <tr data-code="PS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6121')"></td>
+            <td class="c-no">6.1.2.1</td>
+            <td class="c-tit">Travaux d'installation du système d'eau domestique</td>
+            <td class="c-typ">Installation tuyauterie, supports, suspensions et accessoires</td>
+            <td class="c-cod"><span class="cb cb-PS">PS</span></td>
+            <td class="c-ref">22 15 01<br>22 05 01</td>
+            <td class="c-ins">Installation du système d'eau domestique incluant la tuyauterie, supports, suspensions et accessoires</td>
+            <td class="c-frq">(PS) tout au long des travaux</td>
+            <td class="c-out"><span class="ob">Rapport photo</span><br><span class="ob">RIC-BAT-631-5</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6122')"></td>
+            <td class="c-no">6.1.2.2</td>
+            <td class="c-tit">Inspection – identification du réseau et appareils</td>
+            <td class="c-typ">Identification des réseaux et appareils</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 05 53<br>art. 1.3<br>Plans</td>
+            <td class="c-ins">Identification avec les plaques signalétiques des fabricants et colles de chacun des appareils</td>
+            <td class="c-frq">(PS) tout au long des travaux<br>(PA) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">RIC-BAT631-3</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6123')"></td>
+            <td class="c-no">6.1.2.3</td>
+            <td class="c-tit">Équilibrage des réseaux hydrauliques</td>
+            <td class="c-typ">Équilibrage – sous-traitant spécialisé</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 05 93<br>article 1.9</td>
+            <td class="c-ins">Se référer au sous-traitant en balancement. Écart maximal de ±5 % par rapport aux valeurs de calcul.</td>
+            <td class="c-frq">(PA) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">Rapport d'équilibrage</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6124')"></td>
+            <td class="c-no">6.1.2.4</td>
+            <td class="c-tit">Épreuve de tuyauterie</td>
+            <td class="c-typ">Essai hydrostatique – pression</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 05 93<br>art. 1.6, 1.7,<br>1.8 &amp; 3.1</td>
+            <td class="c-ins">Essai hydrostatique à 1½ × pression de service ou min. 860 kPa (la plus élevée). Respecter le Code de Plomberie du Québec. Avis écrit 72 h avant essai.</td>
+            <td class="c-frq">(PA) avant le début de l'épreuve et du calfeutrage</td>
+            <td class="c-out"><span class="ob">RI-LFG-24.2</span></td>
+          </tr>
+          <tr data-code="PS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6125')"></td>
+            <td class="c-no">6.1.2.5</td>
+            <td class="c-tit">Nettoyage et désinfection du réseau d'alimentation</td>
+            <td class="c-typ">Nettoyage avant épreuve</td>
+            <td class="c-cod"><span class="cb cb-PS">PS</span></td>
+            <td class="c-ref">22 05 01<br>art. 1.15<br>22 15 01<br>art. 3.2</td>
+            <td class="c-ins">Effectuer le nettoyage tel que prescrit avant l'épreuve hydrostatique. Nettoyer crépines et filtres. Remplacer filtres avant réception provisoire.</td>
+            <td class="c-frq">(PS) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">RI-LFG-24.1</span><br><span class="ob">Procédure de nettoyage</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6126')"></td>
+            <td class="c-no">6.1.2.6</td>
+            <td class="c-tit">Inspection des travaux de calorifugeage</td>
+            <td class="c-typ">Pose et inspection du calorifuge</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 07 19</td>
+            <td class="c-ins">Effectuer les travaux de calorifugeage tel que prescrit au CTP pour le système d'eau domestique. Ne pas calorifuger avant approbation de l'épreuve.</td>
+            <td class="c-frq">(PS) tout au long des travaux<br>(PA) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">RIC_BAT631-4</span></td>
+          </tr>
+        </tbody>
+      </table></div></div>
+
+      <!-- 6.1.3 Eau de service -->
+      <div class="sh3" onclick="tog('s613',this)">
+        <span>6.1.3 &nbsp; Division 22 – Tuyauteries d'eau de service</span>
+        <span class="sh-right"><span id="p-s613">0/6</span><span class="chevron">▾</span></span>
+      </div>
+      <div id="s613"><div class="twrap"><table>
+        <thead><tr>
+          <th class="c-chk">✓</th><th class="c-no">No.</th><th class="c-tit">Titre de l'étape</th>
+          <th class="c-typ">Étapes de travaux TYP.</th><th class="c-cod">Code opér.</th>
+          <th class="c-ref">Références (devis, articles, codes)</th>
+          <th class="c-ins">Instructions particulières</th>
+          <th class="c-frq">Fréquence</th><th class="c-out">Outils de contrôle</th>
+        </tr></thead>
+        <tbody>
+          <tr data-code="PS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6131')"></td>
+            <td class="c-no">6.1.3.1</td>
+            <td class="c-tit">Travaux d'installation du système d'eau de service</td>
+            <td class="c-typ">Installation tuyauterie eau froide, supports, suspensions</td>
+            <td class="c-cod"><span class="cb cb-PS">PS</span></td>
+            <td class="c-ref">22 15 01<br>22 05 01</td>
+            <td class="c-ins">Installation du système d'eau froide incluant la tuyauterie, supports, suspensions et accessoires</td>
+            <td class="c-frq">(PS) tout au long des travaux</td>
+            <td class="c-out"><span class="ob">Rapport photo</span><br><span class="ob">RIC-BAT-631-5</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6132')"></td>
+            <td class="c-no">6.1.3.2</td>
+            <td class="c-tit">Inspection – identification du réseau et appareils</td>
+            <td class="c-typ">Identification des réseaux et appareils</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 05 53<br>art. 1.3<br>Plans</td>
+            <td class="c-ins">Identification avec les plaques signalétiques des fabricants et colles de chacun des appareils. Couleurs selon norme ONGC 1-GP-12C.</td>
+            <td class="c-frq">(PS) tout au long des travaux<br>(PA) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">RIC-BAT631-3</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6133')"></td>
+            <td class="c-no">6.1.3.3</td>
+            <td class="c-tit">Équilibrage des réseaux hydrauliques</td>
+            <td class="c-typ">Équilibrage – sous-traitant spécialisé</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 05 93<br>article 1.9</td>
+            <td class="c-ins">Se référer au sous-traitant en balancement. Rapport certifié par spécialiste. Écart maximal ±5 %.</td>
+            <td class="c-frq">(PA) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">Rapport d'équilibrage</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6134')"></td>
+            <td class="c-no">6.1.3.4</td>
+            <td class="c-tit">Épreuve de tuyauterie</td>
+            <td class="c-typ">Essai hydrostatique – pression</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 05 93<br>art. 1.6, 1.7,<br>1.8 &amp; 3.1</td>
+            <td class="c-ins">Essai hydrostatique à 1½ × pression de service ou min. 860 kPa. Respecter le Code de Plomberie du Québec. Avis écrit 72 h avant essai.</td>
+            <td class="c-frq">(PA) avant le début de l'épreuve et du calfeutrage</td>
+            <td class="c-out"><span class="ob">RI-LFG-24.2</span></td>
+          </tr>
+          <tr data-code="PS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6135')"></td>
+            <td class="c-no">6.1.3.5</td>
+            <td class="c-tit">Nettoyage et désinfection du réseau d'alimentation</td>
+            <td class="c-typ">Nettoyage avant épreuve</td>
+            <td class="c-cod"><span class="cb cb-PS">PS</span></td>
+            <td class="c-ref">22 05 01<br>art. 1.15<br>22 15 01<br>art. 3.2</td>
+            <td class="c-ins">Effectuer le nettoyage tel que prescrit avant l'épreuve hydrostatique.</td>
+            <td class="c-frq">(PS) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">RI-LFG-24.1</span><br><span class="ob">Procédure de nettoyage</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6136')"></td>
+            <td class="c-no">6.1.3.6</td>
+            <td class="c-tit">Inspection des travaux de calorifugeage</td>
+            <td class="c-typ">Pose et inspection du calorifuge</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 07 19</td>
+            <td class="c-ins">Effectuer les travaux de calorifugeage tel que prescrit au CTP pour le système d'eau de service. Ne pas calorifuger avant approbation de l'épreuve.</td>
+            <td class="c-frq">(PS) tout au long des travaux<br>(PA) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">RIC_BAT631-4</span></td>
+          </tr>
+        </tbody>
+      </table></div></div>
+
+      <!-- 6.1.4 Drainage et évent -->
+      <div class="sh3" onclick="tog('s614',this)">
+        <span>6.1.4 &nbsp; Division 22 – Tuyauteries de drainage et d'évent</span>
+        <span class="sh-right"><span id="p-s614">0/4</span><span class="chevron">▾</span></span>
+      </div>
+      <div id="s614"><div class="twrap"><table>
+        <thead><tr>
+          <th class="c-chk">✓</th><th class="c-no">No.</th><th class="c-tit">Titre de l'étape</th>
+          <th class="c-typ">Étapes de travaux TYP.</th><th class="c-cod">Code opér.</th>
+          <th class="c-ref">Références (devis, articles, codes)</th>
+          <th class="c-ins">Instructions particulières</th>
+          <th class="c-frq">Fréquence</th><th class="c-out">Outils de contrôle</th>
+        </tr></thead>
+        <tbody>
+          <tr data-code="PS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6141')"></td>
+            <td class="c-no">6.1.4.1</td>
+            <td class="c-tit">Travaux d'installation du système de drainage et d'évent</td>
+            <td class="c-typ">Installation tuyauterie drainage/évent, supports, suspensions</td>
+            <td class="c-cod"><span class="cb cb-PS">PS</span></td>
+            <td class="c-ref">22 15 01<br>22 05 01</td>
+            <td class="c-ins">Installation du système de drainage et d'évent incluant la tuyauterie, supports, suspensions et accessoires</td>
+            <td class="c-frq">(PS) tout au long des travaux</td>
+            <td class="c-out"><span class="ob">Rapport photo</span><br><span class="ob">RIC-BAT-631-5</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6142')"></td>
+            <td class="c-no">6.1.4.2</td>
+            <td class="c-tit">Inspection – identification du réseau et appareils</td>
+            <td class="c-typ">Identification des réseaux et appareils</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 05 53<br>art. 1.3<br>Plans</td>
+            <td class="c-ins">Identification avec les plaques signalétiques des fabricants et colles de chacun des appareils</td>
+            <td class="c-frq">(PS) tout au long des travaux<br>(PA) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">RIC-BAT631-3</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6143')"></td>
+            <td class="c-no">6.1.4.3</td>
+            <td class="c-tit">Épreuve de tuyauterie (drainage / évent)</td>
+            <td class="c-typ">Essai à l'eau – drainage et évent</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 05 93<br>art. 1.6, 1.7,<br>1.8 &amp; 3.1</td>
+            <td class="c-ins">Essai conformément au Code de Plomberie du Québec. Épreuve à l'eau : prendre les mesures nécessaires pour faire les essais même en périodes de gel.</td>
+            <td class="c-frq">(PA) avant le début de l'épreuve et du calfeutrage</td>
+            <td class="c-out"><span class="ob">RI-LFG-24.2</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6144')"></td>
+            <td class="c-no">6.1.4.4</td>
+            <td class="c-tit">Inspection des travaux de calorifugeage</td>
+            <td class="c-typ">Pose et inspection du calorifuge</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 07 19</td>
+            <td class="c-ins">Effectuer les travaux de calorifugeage tel que prescrit au CTP pour le système de drainage et d'évent</td>
+            <td class="c-frq">(PS) tout au long des travaux<br>(PA) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">RIC_BAT631-4</span></td>
+          </tr>
+        </tbody>
+      </table></div></div>
+
+      <!-- 6.1.5 Appareils sanitaires -->
+      <div class="sh3" onclick="tog('s615',this)">
+        <span>6.1.5 &nbsp; Division 22 – Équipements et appareils sanitaires</span>
+        <span class="sh-right"><span id="p-s615">0/3</span><span class="chevron">▾</span></span>
+      </div>
+      <div id="s615"><div class="twrap"><table>
+        <thead><tr>
+          <th class="c-chk">✓</th><th class="c-no">No.</th><th class="c-tit">Titre de l'étape</th>
+          <th class="c-typ">Étapes de travaux TYP.</th><th class="c-cod">Code opér.</th>
+          <th class="c-ref">Références (devis, articles, codes)</th>
+          <th class="c-ins">Instructions particulières</th>
+          <th class="c-frq">Fréquence</th><th class="c-out">Outils de contrôle</th>
+        </tr></thead>
+        <tbody>
+          <tr data-code="PS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6151')"></td>
+            <td class="c-no">6.1.5.1</td>
+            <td class="c-tit">Travaux d'installation des équipements et appareils sanitaires</td>
+            <td class="c-typ">Installation appareils, équipements sanitaires et raccordements</td>
+            <td class="c-cod"><span class="cb cb-PS">PS</span></td>
+            <td class="c-ref">22 42 00<br>22 05 01<br>art. 1.7</td>
+            <td class="c-ins">Installation des équipements et appareils sanitaires incluant les raccordements aux réseaux d'eau et de drainage</td>
+            <td class="c-frq">(PS) tout au long des travaux</td>
+            <td class="c-out"><span class="ob">Rapport photo</span><br><span class="ob">RIC-BAT-631-5</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6152')"></td>
+            <td class="c-no">6.1.5.2</td>
+            <td class="c-tit">Inspection – identification des appareils</td>
+            <td class="c-typ">Identification appareils sanitaires</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 05 53<br>art. 1.3<br>Plans</td>
+            <td class="c-ins">Identification avec les plaques signalétiques des fabricants et colles de chacun des appareils</td>
+            <td class="c-frq">(PS) tout au long des travaux<br>(PA) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">RIC-BAT631-3</span></td>
+          </tr>
+          <tr data-code="IPS">
+            <td class="c-chk"><input type="checkbox" onchange="chk(this,'6153')"></td>
+            <td class="c-no">6.1.5.3</td>
+            <td class="c-tit">Mise en marche et essais des appareils sanitaires</td>
+            <td class="c-typ">Vérification fonctionnement et absence de fuites</td>
+            <td class="c-cod"><span class="cb cb-IP">I, PS, PA</span></td>
+            <td class="c-ref">22 05 93<br>art. 1.6 &amp; 1.7<br>22 42 00</td>
+            <td class="c-ins">Vérifier le bon fonctionnement de chaque appareil sanitaire. Vérifier l'absence de fuites aux raccordements. Formation du personnel : min. 4 h (art. 1.11).</td>
+            <td class="c-frq">(PA) à la fin des travaux</td>
+            <td class="c-out"><span class="ob">RI-LFG-24.2</span><br><span class="ob">Rapport d'essai</span></td>
+          </tr>
+        </tbody>
+      </table></div></div>
+
+    </div><!-- /s61 -->
+  </div><!-- /blk -->
+
+<!-- DOCUMENT LIBRARY -->
+<div class="blk" style="margin-top:15px">
+  <div class="sh0">📚 Bibliothèque documentaire</div>
+  <div style="background:white;padding:15px">
+    <input type="file" id="docUpload" multiple accept=".pdf,.docx,.xlsx,.xls,.txt,.csv">
+    <input type="text" id="docSearch" placeholder="Rechercher dans les documents..." style="margin-left:10px;padding:6px;width:350px">
+    <button onclick="searchDocs()" style="padding:6px 12px">Rechercher</button>
+
+    <div id="docStats" style="margin-top:10px;font-size:12px;color:#555">
+      Aucun document téléversé
+    </div>
+
+    <div id="docList" style="margin-top:10px"></div>
+
+    <div id="searchResults" style="margin-top:15px;border-top:1px solid #ddd;padding-top:10px"></div>
+
+    <div style="margin-top:20px">
+      <h3>🤖 Assistant technique</h3>
+      <input type="text" id="aiQuestion" placeholder="Ex: Quels documents concernent l'épreuve hydrostatique ?" style="padding:6px;width:70%">
+      <button onclick="askAssistant()" style="padding:6px 12px">Analyser</button>
+      <div id="aiAnswer" style="margin-top:10px;background:#f5f5f5;padding:10px;border-radius:4px"></div>
+    </div>
+  </div>
+</div>
+</div><!-- /main -->
+
+
+<script>
+// ── State (in-memory only) ──
+var state = {};
+var sections = {
+  s611: ['6111','6112','6113'],
+  s612: ['6121','6122','6123','6124','6125','6126'],
+  s613: ['6131','6132','6133','6134','6135','6136'],
+  s614: ['6141','6142','6143','6144'],
+  s615: ['6151','6152','6153']
+};
+var allIds = Object.values(sections).flat();
+var curFilter = 'all';
+
+function chk(el, id) {
+  state[id] = el.checked;
+  var row = el.closest('tr');
+  row.classList.toggle('done', el.checked);
+  updateProgress();
+  applyFilter(curFilter);
+}
+
+function updateProgress() {
+  var total = allIds.length, done = allIds.filter(function(id){ return state[id]; }).length;
+  document.getElementById('gFill').style.width = (total ? Math.round(done/total*100) : 0) + '%';
+  document.getElementById('gCt').textContent = done + ' / ' + total;
+  Object.keys(sections).forEach(function(sec) {
+    var ids = sections[sec];
+    var d = ids.filter(function(id){ return state[id]; }).length;
+    var el = document.getElementById('p-' + sec);
+    if (el) el.textContent = d + '/' + ids.length;
+  });
+  var total61 = allIds.length, done61 = allIds.filter(function(id){ return state[id]; }).length;
+  var p61 = document.getElementById('p-s61');
+  if (p61) p61.textContent = done61 + '/' + total61;
+}
+
+function tog(id, hdr) {
+  var el = document.getElementById(id);
+  var hidden = el.style.display === 'none';
+  el.style.display = hidden ? '' : 'none';
+  hdr.classList.toggle('coll', !hidden);
+}
+
+function setF(f, btn) {
+  curFilter = f;
+  document.querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  applyFilter(f);
+}
+
+function applyFilter(f) {
+  document.querySelectorAll('tbody tr').forEach(function(tr) {
+    var done = tr.classList.contains('done');
+    var code = tr.dataset.code;
+    var hide = false;
+    if (f === 'done' && !done) hide = true;
+    if (f === 'todo' && done) hide = true;
+    if (f === 'RD' && code !== 'RD') hide = true;
+    if (f === 'PS' && code !== 'PS') hide = true;
+    if (f === 'IPS' && code !== 'IPS') hide = true;
+    tr.classList.toggle('hide', hide);
+  });
+}
+
+function resetAll() {
+  if (!confirm('Réinitialiser toutes les cases cochées ?')) return;
+  state = {};
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){ cb.checked = false; });
+  document.querySelectorAll('tbody tr').forEach(function(tr){ tr.classList.remove('done'); });
+  updateProgress();
+}
+
+updateProgress();
+
+// ===== DOCUMENT LIBRARY =====
+let uploadedDocs = [];
+
+document.getElementById('docUpload')?.addEventListener('change', async function(e){
+  for(const file of e.target.files){
+    const text = await file.text().catch(()=>'');
+    uploadedDocs.push({
+      name:file.name,
+      size:file.size,
+      content:text
+    });
+  }
+  renderDocs();
+});
+
+function renderDocs(){
+  const list = document.getElementById('docList');
+  const stats = document.getElementById('docStats');
+  list.innerHTML = uploadedDocs.map(d =>
+    `<div style="padding:6px;border-bottom:1px solid #eee">${d.name}</div>`
+  ).join('');
+
+  stats.innerHTML = uploadedDocs.length + ' document(s) indexé(s)';
+}
+
+function searchDocs(){
+  const q = document.getElementById('docSearch').value.toLowerCase().trim();
+  const out = document.getElementById('searchResults');
+
+  if(!q){
+    out.innerHTML='';
+    return;
+  }
+
+  let html='';
+  uploadedDocs.forEach(doc=>{
+    if(doc.content.toLowerCase().includes(q) || doc.name.toLowerCase().includes(q)){
+      html += `<div style="margin-bottom:10px">
+        <b>${doc.name}</b><br>
+        Correspondance trouvée.
+      </div>`;
+    }
+  });
+
+  out.innerHTML = html || 'Aucun résultat';
+}
+
+function askAssistant(){
+  const q = document.getElementById('aiQuestion').value.toLowerCase();
+  const ans = document.getElementById('aiAnswer');
+
+  if(uploadedDocs.length===0){
+    ans.innerHTML='Aucun document téléversé.';
+    return;
+  }
+
+  let matches = uploadedDocs.filter(d =>
+      d.name.toLowerCase().includes(q) ||
+      d.content.toLowerCase().includes(q)
+  );
+
+  if(matches.length===0){
+    matches = uploadedDocs.slice(0,5);
+  }
+
+  ans.innerHTML =
+    '<b>Documents potentiellement pertinents :</b><br>' +
+    matches.map(m=>m.name).join('<br>');
+}
+
+</script>
+</body>
+</html>
