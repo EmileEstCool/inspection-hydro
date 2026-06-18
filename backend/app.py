@@ -1,7 +1,8 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+from pypdf import PdfReader
+from docx import Document
 import os
-from ingest import process_file
 
 app = FastAPI()
 
@@ -13,13 +14,63 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-UPLOAD_DIR = "../documents"
+UPLOAD_DIR = "documents"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-@app.get("/")
-def root():
-    return {"status": "OK"}
+# -------------------------
+# IA SIMPLE (checklist)
+# -------------------------
+def generate_checklist(text: str):
 
+    keywords = [
+        "inspect", "verify", "check", "install",
+        "test", "confirm", "measure", "ensure"
+    ]
+
+    tasks = []
+
+    for line in text.split("\n"):
+        low = line.lower()
+
+        if any(k in low for k in keywords) and len(line.strip()) > 5:
+            tasks.append({
+                "task": line.strip(),
+                "status": "pending"
+            })
+
+    return tasks
+
+
+# -------------------------
+# EXTRACTION TEXTE
+# -------------------------
+def extract_text(file_path):
+
+    text = ""
+    ext = os.path.splitext(file_path)[1].lower()
+
+    if ext == ".pdf":
+        reader = PdfReader(file_path)
+        for page in reader.pages:
+            t = page.extract_text()
+            if t:
+                text += t + "\n"
+
+    elif ext == ".docx":
+        doc = Document(file_path)
+        for p in doc.paragraphs:
+            text += p.text + "\n"
+
+    else:
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            text = f.read()
+
+    return text
+
+
+# -------------------------
+# UPLOAD ENDPOINT
+# -------------------------
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
 
@@ -28,6 +79,11 @@ async def upload(file: UploadFile = File(...)):
     with open(file_path, "wb") as f:
         f.write(await file.read())
 
-    result = process_file(file_path)
+    text = extract_text(file_path)
 
-    return result
+    checklist = generate_checklist(text)
+
+    return {
+        "filename": file.filename,
+        "tasks": checklist
+    }
